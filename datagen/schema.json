@@ -1,0 +1,16 @@
+[
+    {
+        "_meta": {
+            "topic": "purchases",
+            "key": "id"
+        },
+        "id": "datatype.uuid",
+        "user_id": "datatype.number({\"max\": 10000})",
+        "item_id": "datatype.number({\"max\": 100})",
+        "price": "commerce.price",
+        "city": "address.city",
+        "state": "address.state",
+        "zipcode": "address.zipCode",
+        "created_at": "datatype.datetime"
+    }
+]
