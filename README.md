@@ -1,4 +1,15 @@
+## Overview
+This demo covers
+1) Generating fake source data and writing it into Kafka
+2) Creating a source in Materialize against a live Kafka topic, then making a materialized view over it with a sliding filter
+3) Visualizing the result of the materialized view in a React app that live updates via websocket requests with SUBSCRIBE queries
+
+The data being modeled is ecommerce purchases.
+The records are purchase transactions, where each purchase record has a location attached to it (in this simple example it's a US State).
+We then visualize the volume of purchases by state in the past hour in a proportional symbol map.
+
 This is a [Next.js](https://nextjs.org/) project based on https://github.com/joacoc/materialize-nextjs-boilerplate.
+The React library react-simple-maps](https://www.react-simple-maps.io/examples/proportional-symbol-map/) is used for the visualizations.
 
 ## Running this yourself
 ### Set up your Kafka topic
@@ -22,12 +33,14 @@ In another terminal, open the [Materialize repo](https://github.com/MaterializeI
 ```
 ./bin/environmentd -- --cors-allowed-origin='*'
 ```
+You could also skip this step and use a real Materialize environment.
 
 ## Create the source and view
-In another terminal, connect to local psql.
+In another terminal, connect to psql.
 ```
 psql -U materialize -h localhost -p 6875 materialize
 ```
+If you're using a real Materialize environment, connect as your regularly would to your Materialize instance.
 
 Run the following sql
 ```
@@ -94,6 +107,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 It should look something like this
 <img width="1087" alt="Screen Shot 2023-03-10 at 1 42 24 PM" src="https://user-images.githubusercontent.com/4186354/224404398-3506d25a-e0e3-4f83-ae3b-e0959a8a83f6.png">
 
+You'd have to make changes to this app source code to point it at a live Materialize instance, instead of local, which is hardcoded in. 
+
 ## Add events to Kafka and see the UI live update
 Run the datagen again with the UI open, and see the UI change live with each update. You can set the datagen tool to write a new record at a certain interval, which is best for this visualization. For example:
 ```
@@ -101,5 +116,5 @@ datagen -s ~/mz-purchase-demo/datagen/schema.json -f json -n 10 -w2000
 ```
 
 It should look something like:
-![purchase-demo-fast](https://user-images.githubusercontent.com/4186354/224407344-b0064f8e-3ef5-472d-b0df-a3925a6c465d.gif)
+![purchase-demo-fast](https://user-images.githubusercontent.com/4186354/224423752-37729a9d-b6c3-42f9-ba53-c234a0420b69.gif)
 
