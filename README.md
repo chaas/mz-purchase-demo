@@ -15,7 +15,7 @@ The React library [react-simple-maps](https://www.react-simple-maps.io/examples/
 ### Set up your Kafka topic
 You must configure your Kafka cluster and topic (e.g. via [Confluent Cloud](https://confluent.cloud/)) such that you can use the [datagen](https://github.com/MaterializeInc/datagen) to write to it.
 
-If using Confluent, you'll also need to set up the Schema Registry (CSR). You'll create one schema with the name `<cluster name>.<topic name>-key` and another  `<cluster name>.<topic name>-value`, for the Kafka topic's key and value schemas respectively.
+If using Confluent, you'll also need to set up the Schema Registry (CSR). You'll create one schema with the name `<cluster name>.<topic name>-key` and another  `<cluster name>.<topic name>-value`, for the Kafka topic's key and value schemas respectively. The schema files used for this demo are checked in here under the [csr subdirectory](https://github.com/chaas/mz-purchase-demo/tree/main/csr).
 
 ### Generate some data
 Use the [datagen tool](https://github.com/MaterializeInc/datagen) to generate some data.
