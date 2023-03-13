@@ -1,0 +1,39 @@
+{
+  "fields": [
+    {
+      "name": "id",
+      "type": "int"
+    },
+    {
+      "name": "user_id",
+      "type": "int"
+    },
+    {
+      "name": "item_id",
+      "type": "int"
+    },
+    {
+      "name": "price",
+      "type": "int"
+    },
+    {
+      "name": "city",
+      "type": "string"
+    },
+    {
+      "name": "state",
+      "type": "string"
+    },
+    {
+      "name": "zipcode",
+      "type": "string"
+    },
+    {
+      "name": "created_at",
+      "type": "string"
+    }
+  ],
+  "name": "products",
+  "namespace": "cara_test",
+  "type": "record"
+}

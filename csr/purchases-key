@@ -1,0 +1,11 @@
+{
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    }
+  ],
+  "name": "PurchaseKey",
+  "namespace": "cara_test",
+  "type": "record"
+}
