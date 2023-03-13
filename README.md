@@ -1,21 +1,23 @@
 ## Overview
 This demo covers
-1) Generating fake source data and writing it into Kafka
-2) Creating a source in Materialize against a live Kafka topic, then making a materialized view over it with a sliding filter
+1) Generating fake source data and writing it into Kafka using the [datagen tool](https://github.com/MaterializeInc/datagen)
+2) Creating a source in Materialize against a live Kafka topic, then making a materialized view over it with a [sliding window temporal filter](https://materialize.com/docs/sql/patterns/temporal-filters/#sliding-windows)
 3) Visualizing the result of the materialized view in a React app that live updates via websocket requests with SUBSCRIBE queries
 
-The data being modeled is ecommerce purchases.
-The records are purchase transactions, where each purchase record has a location attached to it (in this simple example it's a US State).
-We then visualize the volume of purchases by state in the past hour in a proportional symbol map.
+The data being modeled is ecommerce purchases.\
+The records are purchase transactions, where each purchase record has a location attached to it (in this simple example it's a US state).
+We then visualize the volume of purchases by state in the past hour in a [proportional symbol map](https://en.wikipedia.org/wiki/Proportional_symbol_map).
 
-This is a [Next.js](https://nextjs.org/) project based on https://github.com/joacoc/materialize-nextjs-boilerplate.
-The React library react-simple-maps](https://www.react-simple-maps.io/examples/proportional-symbol-map/) is used for the visualizations.
+This is a Next.js project based on https://github.com/joacoc/materialize-nextjs-boilerplate.
+The React library [react-simple-maps](https://www.react-simple-maps.io/examples/proportional-symbol-map/) is used for the visualizations.
 
 ## Running this yourself
 ### Set up your Kafka topic
-You must configure your Kafka cluster and topic (e.g. via [Confluent Cloud](https://confluent.cloud/) such that you can use the [datagen](https://github.com/MaterializeInc/datagen) to write to it.
+You must configure your Kafka cluster and topic (e.g. via [Confluent Cloud](https://confluent.cloud/)) such that you can use the [datagen](https://github.com/MaterializeInc/datagen) to write to it.
 
-## Generate some data
+If using Confluent, you'll also need to set up the Schema Registry (CSR). You'll create one schema with the name `<cluster name>.<topic name>-key` and another  `<cluster name>.<topic name>-value`, for the Kafka topic's key and value schemas respectively.
+
+### Generate some data
 Use the [datagen tool](https://github.com/MaterializeInc/datagen) to generate some data.
 Use the [schema file](datagen/schema.json) checked into this repo.
 
@@ -28,19 +30,21 @@ Confirm the data was written to Kafka.
 In Confluent Cloud this can be done by:\
 Clicking on your cluster &rarr; Topics &rarr; purchases topic &rarr; Messages tab &rarr; filter by "Jump to Offset" with value 0.
 
-## Run Materialize locally
+### Run Materialize locally
 In another terminal, open the [Materialize repo](https://github.com/MaterializeInc/materialize) and run
 ```
 ./bin/environmentd -- --cors-allowed-origin='*'
 ```
 You could also skip this step and use a real Materialize environment.
 
-## Create the source and view
+### Create the source and view
 In another terminal, connect to psql.
 ```
 psql -U materialize -h localhost -p 6875 materialize
 ```
 If you're using a real Materialize environment, connect as your regularly would to your Materialize instance.
+
+You'll have to use your Kafka (and if using Confluent, CSR) connection username and password. More info on that here https://materialize.com/docs/sql/create-connection/#kafka-auth-sasl-options.
 
 Run the following sql
 ```
@@ -95,7 +99,7 @@ SELECT * FROM purchases_view LIMIT 1;
 ```
 to confirm everything is getting ingested correctly.
 
-## Running the Next.js web app
+### Running the Next.js web app
 In another terminal, run the development server:
 
 ```bash
@@ -109,7 +113,7 @@ It should look something like this
 
 You'd have to make changes to this app source code to point it at a live Materialize instance, instead of local, which is hardcoded in. 
 
-## Add events to Kafka and see the UI live update
+### Add events to Kafka and see the UI live update
 Run the datagen again with the UI open, and see the UI change live with each update. You can set the datagen tool to write a new record at a certain interval, which is best for this visualization. For example:
 ```
 datagen -s ~/mz-purchase-demo/datagen/schema.json -f json -n 10 -w2000
@@ -118,3 +122,7 @@ datagen -s ~/mz-purchase-demo/datagen/schema.json -f json -n 10 -w2000
 It should look something like:
 ![purchase-demo-fast](https://user-images.githubusercontent.com/4186354/224423752-37729a9d-b6c3-42f9-ba53-c234a0420b69.gif)
 
+## Future improvements
+Some ideas to expand on this further:
+* Use zipcode instead of state for more granularity, and then use a library like [react-geocode](https://www.npmjs.com/package/react-geocode) to map it to the latitude and longitude
+* Add in more source topics/tables (e.g. users, items) to exemplify joining across sources
